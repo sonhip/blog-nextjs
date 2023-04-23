@@ -1,7 +1,5 @@
-import FeaturedPosts from '@/components/home-page/featured-posts';
-import Hero from '@/components/home-page/hero';
+import AllPosts from '@/components/posts/all-posts';
 import { PostItemProps } from '@/utils/types';
-import { Fragment } from 'react';
 
 const DUMMY_DATA: PostItemProps[] = [
   {
@@ -45,12 +43,6 @@ const DUMMY_DATA: PostItemProps[] = [
     date: '2022-02-10',
   },
 ];
-
-export default function HomePage() {
-  return (
-    <Fragment>
-      <Hero />
-      <FeaturedPosts posts={DUMMY_DATA} />
-    </Fragment>
-  );
+export default function AllPostPage() {
+  return <AllPosts posts={DUMMY_DATA} />;
 }
