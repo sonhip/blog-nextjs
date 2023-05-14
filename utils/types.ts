@@ -4,4 +4,5 @@ export interface PostItemProps {
   excerpt: string;
   date: string;
   slug: string;
+  content?: string | undefined;
 }
