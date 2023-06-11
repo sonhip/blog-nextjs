@@ -1,15 +1,18 @@
 // Next.js API route support: https://nextjs.org/docs/api-routes/introduction
 import type { NextApiRequest, NextApiResponse } from "next";
-import { MongoClient } from "mongodb";
+import { MongoClient, ObjectId } from "mongodb";
 // define type response
-type Data = {
+type Message = {
+  id?: ObjectId;
+  email: string;
   name: string;
+  message: string;
 };
 
 export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse
-) {
+): Promise<void> {
   if (req.method === "POST") {
     const { email, name, message } = req.body;
 
@@ -25,19 +28,33 @@ export default async function handler(
       return;
     }
 
-    const newMessage = {
+    const newMessage: Message = {
       email,
       name,
       message,
     };
     try {
-      const client = await MongoClient.connect(
-        "mongodb+srv://admin:UNW0EjiZR2xehZcO@cluster0.xpyscee.mongodb.net/?retryWrites=true&w=majority"
+      const client: MongoClient = await MongoClient.connect(
+        "mongodb+srv://sonhip:HwDvZtdupvzPe6TM@cluster0.xpyscee.mongodb.net/my-blog"
       );
-    } catch (error) {
-      res.status(500).json({ message: "can't not connect to mongo!" });
-    }
+      const db = client.db();
+      try {
+        const result = db.collection("contact-messages").insertOne(newMessage);
+        newMessage.id = (await result).insertedId;
+      } catch (error) {
+        client.close();
+        res.status(500).json({ message: "storing message failed!" });
+        return;
+      }
 
-    res.status(200).json({ name: "John Doe" });
+      client.close();
+
+      res.status(201).json({
+        message: "Successfully stored message!",
+        messages: newMessage,
+      });
+    } catch (error) {
+      res.status(500).json({ message: "could't connect to mongo!" });
+    }
   }
 }
